@@ -28,7 +28,8 @@ export interface IUserInfomation {
     id: string,
     email: string,
     avatar_url: string,
-    html_url: string
+    html_url: string,
+    token:string
 }
 
 export interface ILoginInfomation {

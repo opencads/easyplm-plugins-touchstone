@@ -87,6 +87,7 @@ let main = async () => {
             output.avatar_url = '';
             output.email = loginResult.user.email;
             output.html_url = '';
+            output.token = loginResult.accesstoken;
             File.WriteAllText(cacheLoginJsonPath, JSON.stringify(output), utf8);
             File.WriteAllText(outputPath, JSON.stringify(output), utf8);
         }
