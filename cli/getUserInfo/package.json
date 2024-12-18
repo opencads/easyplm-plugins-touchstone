@@ -1,4 +1,4 @@
 {
-    "Name": "login",
+    "Name":"get-user-info",
     "Entry": "tscl run {.}/index.ts --input {Input} --output {Output} --logger {Logger}"
 }
