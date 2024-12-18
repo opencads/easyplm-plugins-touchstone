@@ -25,7 +25,7 @@ for (let i = 0; i < args.length; i++) {
 }
 console.log(parameters);
 
-let cacheDirectory = Path.Combine(env('userprofile'), "Cache");
+let cacheDirectory = Path.Combine(env('userprofile'), ".xplm", "Cache");
 if (Directory.Exists(cacheDirectory) == false) {
     Directory.CreateDirectory(cacheDirectory);
 }
