@@ -12,7 +12,7 @@
         "scope": ""
     },
     "Method": "GET",
-    "Url": "$urlPrefix+`space-standalone/space-cad-server/mcadCatalogs/activeWorkspace`",
+    "Url": "$urlPrefix+`space-standalone/space-cad-server/mcads/getList`",
     "QueryParameters": {
         "mcadCatalogOid": "$mcadCatalogOid",
         "name": "$name",
