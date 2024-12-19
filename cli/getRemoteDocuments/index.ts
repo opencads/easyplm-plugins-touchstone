@@ -116,7 +116,7 @@ let main = async () => {
     let tenant = await getTenantInfo();
     let workspace = await getActiveWorkspace(tenant.defaultTanant.oid);
     let tasks = [] as any[];
-    let firstPage = await getlist(tenant.defaultTanant.oid, workspace.oid, 1, 9999);
+    let firstPage = await getlist(tenant.defaultTanant.oid, workspace.oid, 9999, 1);
     let result = [] as IDocumentRecord[];
     for (let row of firstPage.rows) {
         let document = {} as IDocumentRecord;
