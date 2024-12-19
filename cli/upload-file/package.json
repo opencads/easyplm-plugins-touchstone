@@ -1,0 +1,4 @@
+{
+    "Name": "upload-file",
+    "Entry": "tscl run {.}/index.ts --input {Input} --output {Output} --logger {Logger}"
+}

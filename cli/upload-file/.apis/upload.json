@@ -1,0 +1,19 @@
+{
+    "Parameters": {
+        "url": "",
+        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "filePath": ""
+    },
+    "Method": "POST",
+    "Url": "$url",
+    "Headers": {
+        "accesstoken": "$token",
+        "appName": "xplm"
+    },
+    "Body": {
+        "Type": "Binary",
+        "Path": "$filePath"
+    }
+}
