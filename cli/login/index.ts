@@ -2,7 +2,7 @@ import { args, env, setLoggerPath } from '../.tsc/context';
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
 import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
-import { ILoginInfomation, ITouchtoneLoginResult, ITouchtoneWebMessage, IUserInfomation } from '../interfaces';
+import { ILoginInfomation, ITouchstoneLoginResult, ITouchstoneWebMessage, IUserInfomation } from '../interfaces';
 import { File } from '../.tsc/System/IO/File';
 import { Path } from '../.tsc/System/IO/Path';
 import { Directory } from '../.tsc/System/IO/Directory';
@@ -78,9 +78,9 @@ let main = async () => {
         }
     });
     if (response.status == 200) {
-        let loginWebMessage = response.data as ITouchtoneWebMessage;
+        let loginWebMessage = response.data as ITouchstoneWebMessage;
         if (loginWebMessage.code == 0) {
-            let loginResult = loginWebMessage.result as ITouchtoneLoginResult;
+            let loginResult = loginWebMessage.result as ITouchstoneLoginResult;
             output.isLogin = true;
             output.name = loginResult.user.name;
             output.id = loginResult.user.oid;

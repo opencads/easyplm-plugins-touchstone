@@ -1,4 +1,4 @@
-export interface ITouchtoneUser {
+export interface ITouchstoneUser {
     oid: string,
     type: "User",
     name: string,
@@ -9,14 +9,14 @@ export interface ITouchtoneUser {
     email: string
 }
 
-export interface ITouchtoneLoginResult {
+export interface ITouchstoneLoginResult {
     tenantAlias: string,
     tenantOid: string,
     accesstoken: string,
-    user: ITouchtoneUser
+    user: ITouchstoneUser
 }
 
-export interface ITouchtoneWebMessage {
+export interface ITouchstoneWebMessage {
     code: number,
     msg: string,
     result: any
@@ -29,7 +29,7 @@ export interface IUserInfomation {
     email: string,
     avatar_url: string,
     html_url: string,
-    token:string
+    token: string
 }
 
 export interface ILoginInfomation {

@@ -1,0 +1,28 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://116.198.204.139:5001/",
+        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "tenantOid": "",
+        "mcadCatalogOid": "",
+        "name": "",
+        "page": "1",
+        "size": "20",
+        "scope": ""
+    },
+    "Method": "GET",
+    "Url": "$urlPrefix+`space-standalone/space-cad-server/mcadCatalogs/activeWorkspace`",
+    "QueryParameters": {
+        "mcadCatalogOid": "$mcadCatalogOid",
+        "name": "$name",
+        "page": "$page",
+        "size": "$size",
+        "scope": "$scope"
+    },
+    "Headers": {
+        "accesstoken": "$token",
+        "appName": "xplm",
+        "tenantOid": "$tenantOid"
+    }
+}
