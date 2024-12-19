@@ -112,7 +112,11 @@ let main = async () => {
     let input = Json.Load(inputPath) as ILoginInfomation;
     let output = {} as getRemoteDocumentsOutput;
     setLoggerPath(loggerPath);
-
+    if (File.Exists(cacheLoginJsonPath) == false) {
+        output.Documents = [];
+        File.WriteAllText(outputPath, JSON.stringify(output), utf8);
+        return;
+    }
     let tenant = await getTenantInfo();
     let workspace = await getActiveWorkspace(tenant.defaultTanant.oid);
     let tasks = [] as any[];
