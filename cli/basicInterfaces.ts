@@ -7,7 +7,7 @@ export interface IDocumentRecord {
     remoteLastModifiedTime: string;
     lifeCycle: string;
     local: {
-        workspaceState: 'untracked' | 'modified' | 'archived' | 'missing';
+        workspaceState: 'untracked' | 'modified' | 'archived' | 'missing'| 'todownload';
         localFilePath: string;
         localAttributes: {
             key: string,

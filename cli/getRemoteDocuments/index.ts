@@ -130,7 +130,7 @@ let main = async () => {
             document.fileName = row.primaryFiles[0].fileName;
         }
         document.lifeCycle = row.lifecycleStatus;
-        document.number = row.pnumber;
+        document.number = '';
         document.partNumber = row.pnumber;
         let paramsKeys = Object.keys(row.params);
         document.remoteAttributes = [];
@@ -157,7 +157,7 @@ let main = async () => {
             localChildren: [],
             localFilePath: "",
             localLastModifiedTime: "",
-            workspaceState: 'untracked'
+            workspaceState: 'todownload'
         };
         result.push(document);
     }
