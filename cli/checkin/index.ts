@@ -106,13 +106,17 @@ let main = async () => {
     let importResult = await importDocumentsToWorkspace(importInput);
     // 对文件进行上载
     let uploadInput = {
-        Items: (input.Items.map(item => {
-            return {
-                FilePath: item.FilePath,
-                FileName: `${datetimeUtils.getJSTimestamp()}_${Path.GetFileName(item.FilePath)}`
-            }
-        }))
+        Items: []
     } as IUploadFileInput;
+    for (let item of importResult.importResult) {
+        let archivePath = await getContentArchivePath(item.contentMD5);
+        uploadInput.Items.push(
+            {
+                FilePath: archivePath,
+                FileName: `${datetimeUtils.getJSTimestamp()}_${Path.GetFileName(item.originFileName)}`
+            }
+        );
+    }
     let uploadResult = await upload(uploadInput);
     output.Items = uploadResult.Items;
     File.WriteAllText(outputPath, JSON.stringify(output), utf8);
