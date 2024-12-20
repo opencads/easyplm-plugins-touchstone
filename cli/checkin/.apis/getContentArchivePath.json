@@ -1,0 +1,11 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://localhost:19799",
+        "contentMD5": ""
+    },
+    "Method": "POST",
+    "Url": "$urlPrefix+`/api/v1/xplm/getContentArchivePath`",
+    "Body": {
+        "contentMD5": "$contentMD5"
+    }
+}

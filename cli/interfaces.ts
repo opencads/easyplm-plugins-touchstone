@@ -36,3 +36,10 @@ export interface ILoginInfomation {
     username: string,
     password: string
 }
+
+export interface WebMessage {
+    success: boolean;
+    code: number;
+    message: string;
+    data: any;
+}
