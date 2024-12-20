@@ -124,11 +124,9 @@ let main = async () => {
     for (let item of input.Items) {
         let tempItem = item;
         tasks.push((async () => {
-            let timestamp = datetimeUtils.getJSTimestamp();
-            let formatedFileName = `${timestamp}_${tempItem.FileName}`;
-            let preResult = await preSignedPutUrl(formatedFileName);
+            let preResult = await preSignedPutUrl(tempItem.FileName);
             await upload(preResult.url, tempItem.FilePath);
-            let metadata = await createFileMetadata(fileUtils.size(tempItem.FilePath), formatedFileName, preResult.bucketName);
+            let metadata = await createFileMetadata(fileUtils.size(tempItem.FilePath), tempItem.FileName, preResult.bucketName);
             outputMap[metadata.oid] = metadata;
         })());
     }
