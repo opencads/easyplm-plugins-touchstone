@@ -45,7 +45,7 @@ let main = async () => {
     if (loggerPath == undefined || loggerPath == null) {
         throw "loggerPath is required";
     }
-    let input = Json.Load(inputPath) as ILoginInfomation;
+    let input = Json.Load(inputPath);
     let output = {} as IUserInfomation;
     setLoggerPath(loggerPath);
     File.WriteAllText(cacheLoginJsonPath,JSON.stringify({
