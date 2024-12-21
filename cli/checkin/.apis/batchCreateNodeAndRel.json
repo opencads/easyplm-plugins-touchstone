@@ -34,8 +34,7 @@
     },
     "Headers": {
         "accesstoken": "$token",
-        "appName": "xplm",
-        "tenantOid": "$tenantOid"
+        "appName": "xplm"
     },
     "Body": {
         "nodes":"$nodes",
