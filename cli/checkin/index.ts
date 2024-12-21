@@ -242,7 +242,7 @@ let main = async () => {
 
         let batchBindFilesInputItem = {
             fileName: item.originFileName,
-            fileOid: metadata?.oid,
+            fileOid: metadata.oid,
             filePath: fileDirectory,
             fileType:"CATIA R18",
             lastModified: datetimeUtils.toFormatString(item.fileLastWriteTime, "yyyy-MM-dd HH:mm:ss"),
