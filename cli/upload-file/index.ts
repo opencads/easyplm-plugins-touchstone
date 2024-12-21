@@ -7,6 +7,7 @@ import { IUploadFileInput, IUploadFileOutput } from "./interfaces";
 import { fileUtils } from "../.tsc/Cangjie/TypeSharp/System/fileUtils";
 import { datetimeUtils } from "../.tsc/Cangjie/TypeSharp/System/datetimeUtils";
 import { taskUtils } from "../.tsc/Cangjie/TypeSharp/System/taskUtils";
+import { File } from "../.tsc/System/IO/File";
 
 let utf8 = new UTF8Encoding(false);
 let parameters = {} as { [key: string]: string };
@@ -135,6 +136,7 @@ let main = async () => {
     for (let key of keys) {
         output.Items.push(outputMap[key]);
     }
+    File.WriteAllText(outputPath, JSON.stringify(output), utf8);
 };
 
 await main();

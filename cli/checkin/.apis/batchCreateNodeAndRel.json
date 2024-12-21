@@ -1,0 +1,44 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://116.198.204.139:5001/",
+        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "nodes": [
+            {
+                "boundingBox": "",
+                "dsVersionModified": true,
+                "fileLastModified": "2024-12-20 17:56:00",
+                "nodeName": "Product3",
+                "opacity": "",
+                "pNumber": "Product3",
+                "params": {
+                    "ActivateBOM": "1",
+                    "J_BOUNDINGBOX": ""
+                },
+                "projName": [],
+                "rgb": "",
+                "state": "New",
+                "subType": "Assembly",
+                "toCreateVersion": "A.1",
+                "type": "CADAssembly"
+            }
+        ],
+        "rels": []
+    },
+    "Method": "POST",
+    "Url": "$urlPrefix+`space-standalone/space-cad-server/mcads/batchCreateNodeAndRel`",
+    "QueryParameters": {
+        "checkin": "false",
+        "command": ""
+    },
+    "Headers": {
+        "accesstoken": "$token",
+        "appName": "xplm",
+        "tenantOid": "$tenantOid"
+    },
+    "Body": {
+        "nodes":"$nodes",
+        "rels":"$rels"
+    }
+}

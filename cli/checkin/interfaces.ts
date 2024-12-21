@@ -25,6 +25,9 @@ export interface DocumentInterface {
     partRemoteID: string,
     displayName: string,
     createTime: DateTime,
+    updateTime: DateTime,
+    fileLastWriteTime: DateTime,
+    fileLength: number
 }
 
 export interface ICheckInInput {
@@ -35,4 +38,51 @@ export interface ICheckInInput {
 
 export interface ICheckInOutput {
 
+}
+
+export interface batchByNamesInputItem {
+    "modelDefinition": "CADAssembly" | "CADPart",
+    "nodeName": string,
+    "nodeVersion": string
+}
+
+export interface batchByNamesOutputItem {
+    "spaceMcad": any,
+    "pdmMcad": {
+        "fileLastModified": any,
+        "displayVersion": string,
+        "name": string,
+        "modelDefinition": "CADAssembly" | "CADPart"
+    }
+}
+
+export interface batchCreateNodeAndRelItem {
+    "boundingBox": string,
+    "dsVersionModified": boolean,
+    "fileLastModified": string,
+    "nodeName": string,
+    "opacity": string,
+    "pNumber": string,
+    "params": {
+        "ActivateBOM": "1",
+        "J_BOUNDINGBOX": ""
+    },
+    "projName": string[],
+    "rgb": string,
+    "state": "New",
+    "subType": "Assembly" | "Part",
+    "toCreateVersion": string,
+    "type": "CADAssembly" | "CADPart"
+}
+
+export interface batchBindFilesInputItem {
+    "fileName": string,
+    "fileOid": string,
+    "filePath": string,
+    "fileType": string,
+    "lastModified": string,
+    "nodeName": string,
+    "primary": boolean,
+    "nodeType": "CADAssembly" | "CADPart",
+    "dsVersionModified": boolean
 }

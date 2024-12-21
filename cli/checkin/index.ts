@@ -5,8 +5,8 @@ import { axios } from '../.tsc/Cangjie/TypeSharp/System/axios';
 import { Path } from '../.tsc/System/IO/Path';
 import { File } from '../.tsc/System/IO/File';
 import { UTF8Encoding } from '../.tsc/System/Text/UTF8Encoding';
-import { WebMessage } from '../interfaces';
-import { DocumentInterface, ICheckInInput, ICheckInOutput, IImportInput } from './interfaces';
+import { ITouchstoneWebMessage, WebMessage } from '../interfaces';
+import { DocumentInterface, ICheckInInput, ICheckInOutput, IImportInput, batchBindFilesInputItem, batchByNamesInputItem, batchByNamesOutputItem, batchCreateNodeAndRelItem } from './interfaces';
 import { IUploadFileInput, IUploadFileOutput } from '../upload-file/interfaces';
 import { datetimeUtils } from "../.tsc/Cangjie/TypeSharp/System/datetimeUtils";
 
@@ -76,6 +76,86 @@ let upload = async (input: IUploadFileInput) => {
     return await callPlugin('upload-file', input) as IUploadFileOutput;
 };
 
+let batchByNames = async (data: batchByNamesInputItem[]) => {
+    let response = await apis.runAsync("batchByNames", {
+        data: data
+    });
+    if (response.StatusCode == 200) {
+        let msg = response.Body as ITouchstoneWebMessage;
+        if (msg.code == 0) {
+            return msg.result as batchByNamesOutputItem[];
+        }
+        else {
+            throw msg.msg;
+        }
+    }
+    else {
+        throw `Failed, status code: ${response.StatusCode}`;
+    }
+};
+
+let batchBindFiles = async (data: batchBindFilesInputItem[]) => {
+    let response = await apis.runAsync("batchBindFiles", {
+        data: data
+    });
+    if (response.StatusCode == 200) {
+        let msg = response.Body as ITouchstoneWebMessage;
+        if (msg.code == 0) {
+            return msg.result;
+        }
+        else {
+            throw msg.msg;
+        }
+    }
+    else {
+        throw `Failed, status code: ${response.StatusCode}`;
+    }
+};
+
+let batchCreateNodeAndRel = async (data: batchCreateNodeAndRelItem[]) => {
+    let response = await apis.runAsync("batchCreateNodeAndRel", {
+        nodes: data
+    });
+    if (response.StatusCode == 200) {
+        let msg = response.Body as ITouchstoneWebMessage;
+        if (msg.code == 0) {
+            return msg.result;
+        }
+        else {
+            throw msg.msg;
+        }
+    }
+    else {
+        throw `Failed, status code: ${response.StatusCode}`;
+    }
+};
+
+let getModelDefinition = (path: string) => {
+    let extension = Path.GetExtension(path).toLowerCase();
+    if (extension == ".catpart") {
+        return "CADPart";
+    }
+    else if (extension == ".catassembly") {
+        return "CADAssembly";
+    }
+    else {
+        throw `Unsupported extension: ${extension}`;
+    }
+};
+
+let getType = (path: string) => {
+    let extension = Path.GetExtension(path).toLowerCase();
+    if (extension == ".catpart") {
+        return "Part";
+    }
+    else if (extension == ".catassembly") {
+        return "Assembly";
+    }
+    else {
+        throw `Unsupported extension: ${extension}`;
+    }
+};
+
 let main = async () => {
     let inputPath = parameters.i ?? parameters.input;
     let outputPath = parameters.o ?? parameters.output;
@@ -98,12 +178,26 @@ let main = async () => {
     let importInput = {
         Items: []
     } as IImportInput;
+    let fileDirectory = "";
     for (let item of input.Items) {
+        if (fileDirectory == "") {
+            fileDirectory = Path.GetDirectoryName(item.FilePath);
+        }
         importInput.Items.push({
             FilePath: item.FilePath
         });
     }
     let importResult = await importDocumentsToWorkspace(importInput);
+    // 查询节点
+    let batchByNamesInputItems = [] as batchByNamesInputItem[];
+    for (let item of importResult.importResult) {
+        batchByNamesInputItems.push({
+            modelDefinition: getModelDefinition(item.lowerFormatFileName),
+            nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
+            nodeVersion: ""
+        });
+    }
+    let batchByNamesResult = await batchByNames(batchByNamesInputItems);
     // 对文件进行上载
     let uploadInput = {
         Items: []
@@ -118,7 +212,50 @@ let main = async () => {
         );
     }
     let uploadResult = await upload(uploadInput);
-    output.Items = uploadResult.Items;
+    // 创建节点
+    let batchCreateNodeAndRelInputItems = [] as batchCreateNodeAndRelItem[];
+    let batchBindFilesInputItems = [] as batchBindFilesInputItem[];
+    for (let item of importResult.importResult) {
+        let metadata = uploadResult.Items.find(x => x.fileOriginalName == item.originFileName);
+        if (metadata == undefined) {
+            throw `Failed to find metadata for ${item.originFileName}`;
+        }
+        let batchCreateNodeAndRelItem = {
+            boundingBox: "",
+            dsVersionModified: true,
+            fileLastModified: datetimeUtils.toFormatString(item.fileLastWriteTime, "yyyy-MM-dd HH:mm:ss"),
+            nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
+            opacity: "",
+            pNumber: Path.GetFileNameWithoutExtension(item.formatFileName),
+            params: {
+                ActivateBOM: "1",
+                J_BOUNDINGBOX: ""
+            },
+            projName: [],
+            rgb: "",
+            state: "New",
+            subType: getType(item.formatFileName),
+            toCreateVersion: "A.1",
+            type: getModelDefinition(item.lowerFormatFileName),
+        } as batchCreateNodeAndRelItem;
+        batchCreateNodeAndRelInputItems.push(batchCreateNodeAndRelItem);
+
+        let batchBindFilesInputItem = {
+            fileName: item.originFileName,
+            fileOid: metadata?.oid,
+            filePath: fileDirectory,
+            fileType:"CATIA R18",
+            lastModified: datetimeUtils.toFormatString(item.fileLastWriteTime, "yyyy-MM-dd HH:mm:ss"),
+            nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
+            primary:true,
+            nodeType: getModelDefinition(item.formatFileName),
+            dsVersionModified: true,
+
+        } as batchBindFilesInputItem;
+        batchBindFilesInputItems.push(batchBindFilesInputItem);
+    }
+    await batchCreateNodeAndRel(batchCreateNodeAndRelInputItems);
+    await batchBindFiles(batchBindFilesInputItems);
     File.WriteAllText(outputPath, JSON.stringify(output), utf8);
 };
 

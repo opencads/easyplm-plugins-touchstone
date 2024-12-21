@@ -1,0 +1,35 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://116.198.204.139:5001/",
+        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "data": [
+            {
+                "fileName": "Product3.CATProduct",
+                "fileOid": "0e808517-83c2-471e-bf1a-d371786251d3",
+                "filePath": "C:\\Users\\happy\\Downloads\\tmp",
+                "fileType": "CATIA R19",
+                "lastModified": "2024-12-20 17:56:00",
+                "nodeName": "Product3",
+                "primary": true,
+                "nodeType": "CADAssembly",
+                "dsVersionModified": true
+            }
+        ]
+    },
+    "Method": "POST",
+    "Url": "$urlPrefix+`space-cad-server/mcads/batchBindFiles`",
+    "QueryParameters": {
+        "checkin": "false"
+    },
+    "Headers": {
+        "accesstoken": "$token",
+        "appName": "xplm",
+        "tenantOid": "$tenantOid"
+    },
+    "Body": {
+        "Type":"Json",
+        "Data":"$data"
+    }
+}

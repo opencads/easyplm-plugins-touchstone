@@ -24,4 +24,7 @@ export class datetimeUtils {
     public static getJSTimestamp(dateTime?: DateTime): number {
         return {} as any;
     }
+    public static toFormatString(value?: any, format?: string): string {
+        return {} as any;
+    }
 }
