@@ -16,8 +16,7 @@
     "Url": "$urlPrefix+`space-standalone/space-cad-server/mcads/batchByNames`",
     "Headers": {
         "accesstoken": "$token",
-        "appName": "xplm",
-        "tenantOid": "$tenantOid"
+        "appName": "xplm"
     },
     "Body": {
         "Type": "Json",
