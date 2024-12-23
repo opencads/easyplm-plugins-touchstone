@@ -126,8 +126,10 @@ let main = async () => {
         let document = {} as IDocumentRecord;
         document.name = row.name;
         document.fileName = "";
-        if (row.primaryFiles.length > 0) {
-            document.fileName = row.primaryFiles[0].fileName;
+        if (row.primaryFiles) {
+            if (row.primaryFiles.length > 0) {
+                document.fileName = row.primaryFiles[0].fileName;
+            }
         }
         document.lifeCycle = row.lifecycleStatus;
         document.number = '';
