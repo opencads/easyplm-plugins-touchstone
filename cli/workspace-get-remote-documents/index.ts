@@ -131,28 +131,32 @@ let main = async () => {
                 document.fileName = row.primaryFiles[0].fileName;
             }
         }
-        document.lifeCycle = row.lifecycleStatus;
         document.number = '';
         document.partNumber = row.pnumber;
+        document.remote = {
+            lifeCycle: row.lifecycleStatus,
+            remoteAttributes: [],
+            remoteChildren: [],
+            remoteLastModifiedTime: DateTime.Parse(row.fileLastModified).ToString("O"),
+            remoteState: 'unknown',
+            raw: row
+        };
         let paramsKeys = Object.keys(row.params);
-        document.remoteAttributes = [];
         for (let key of paramsKeys) {
-            document.remoteAttributes.push({
+            document.remote.remoteAttributes.push({
                 key: key,
                 value: row.params[key],
                 type: 'string'
             });
         }
-        document.remoteChildren = [];
-        document.remoteLastModifiedTime = DateTime.Parse(row.fileLastModified).ToString("O");
         if (row.state == "New") {
-            document.remoteState = 'new';
+            document.remote.remoteState = 'new';
         }
         else if (row.checkin) {
-            document.remoteState = 'checkedIn';
+            document.remote.remoteState = 'checkedIn';
         }
         else {
-            document.remoteState = 'checkedOut';
+            document.remote.remoteState = 'checkedOut';
         }
         document.local = {
             localAttributes: [],
