@@ -39,8 +39,8 @@
                                     "key": "type",
                                     "type": "select",
                                     "selectOptions": [
-                                        "git-release",
-                                        "git-repository"
+                                        "git-repository",
+                                        "git-release"
                                     ],
                                     "selectWidth": "12em",
                                     "columnWidth": "14em"
