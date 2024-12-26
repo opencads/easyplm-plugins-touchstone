@@ -1,0 +1,5 @@
+{
+    "Name": "get-layout",
+    "Entry": "{.}/layout.json",
+    "Type": "FileRead"
+}

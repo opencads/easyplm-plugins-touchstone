@@ -1,0 +1,16 @@
+{
+    "tabs": [
+        {
+            "key": "documents",
+            "icon": "documents",
+            "title": "Documents",
+            "url": "native://documents"
+        },
+        {
+            "key": "workspaces",
+            "icon": "workspaces",
+            "title": "Workspaces",
+            "url": "/xplm-ui-home/workspaces"
+        }
+    ]
+}
