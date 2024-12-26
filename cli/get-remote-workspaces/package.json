@@ -1,4 +1,4 @@
 {
-    "Name": "query-documents-by-index",
+    "Name": "get-remote-workspaces",
     "Entry": "tscl run {.}/main.ts --input {Input} --output {Output} --logger {Logger}"
 }
