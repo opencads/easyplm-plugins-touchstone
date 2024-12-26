@@ -12,7 +12,9 @@
     "Headers": {
         "accesstoken": "$token",
         "appName": "xplm",
-        "tenantOid": "$tenant_id",
-        "oid": "$oid"
+        "tenantOid": "$tenant_id"
+    },
+    "QueryParameters":{
+        "oid":"$oid"
     }
 }
