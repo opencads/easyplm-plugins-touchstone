@@ -8,7 +8,7 @@
         "oid": ""
     },
     "Method": "GET",
-    "Url": "$urlPrefix+`/space-standalone/space-cad-server/mcadCatalogs/activate`",
+    "Url": "$urlPrefix+`space-standalone/space-cad-server/mcadCatalogs/activate`",
     "Headers": {
         "accesstoken": "$token",
         "appName": "xplm",
