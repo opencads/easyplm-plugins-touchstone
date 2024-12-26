@@ -4,7 +4,7 @@
             "key": "documents",
             "icon": "documents",
             "title": "Documents",
-            "url": "native://documents"
+            "url": "/xplm-ui-home/documents"
         },
         {
             "key": "workspaces",
