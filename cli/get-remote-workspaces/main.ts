@@ -80,8 +80,10 @@ let main = async () => {
     let remoteWorkspaces = await getWorkspaces();
     for (let workspace of remoteWorkspaces) {
         output.push({
+            key: workspace.oid,
             name: workspace.name,
-            active: workspace.active
+            active: workspace.active,
+            raw: workspace
         });
     }
 

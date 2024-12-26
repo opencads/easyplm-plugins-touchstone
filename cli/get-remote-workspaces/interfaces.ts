@@ -1,6 +1,8 @@
 export interface IWorkspaceRecord {
+    key: string,
     name: string,
-    active?: boolean
+    active?: boolean,
+    raw?: any
 }
 
 export interface MCADCatalog {
