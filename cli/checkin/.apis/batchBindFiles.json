@@ -19,7 +19,7 @@
         ]
     },
     "Method": "POST",
-    "Url": "$urlPrefix+`space-cad-server/mcads/batchBindFiles`",
+    "Url": "$urlPrefix+`space-standalone/space-cad-server/mcads/batchBindFiles`",
     "QueryParameters": {
         "checkin": "false"
     },
