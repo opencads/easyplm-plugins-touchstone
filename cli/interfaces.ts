@@ -29,7 +29,10 @@ export interface IUserInfomation {
     email: string,
     avatar_url: string,
     html_url: string,
-    token: string
+    token: string,
+    tenant_id?: string,
+    raw?: any
+    tenant_raw?: any
 }
 
 export interface ILoginInfomation {
