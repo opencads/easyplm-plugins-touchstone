@@ -1,4 +1,4 @@
 {
-    "Name": "get-remote-workspaces",
+    "Name": "remote-workspaces-active",
     "Entry": "tscl run {.}/main.ts --input {Input} --output {Output} --logger {Logger}"
 }

@@ -1,0 +1,18 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://116.198.204.139:5001/",
+        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "tenant_id": "$loginJson.tenant_id",
+        "oid": ""
+    },
+    "Method": "GET",
+    "Url": "$urlPrefix+`/space-standalone/space-cad-server/mcadCatalogs/activate`",
+    "Headers": {
+        "accesstoken": "$token",
+        "appName": "xplm",
+        "tenantOid": "$tenant_id",
+        "oid": "$oid"
+    }
+}
