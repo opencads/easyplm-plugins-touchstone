@@ -130,6 +130,47 @@ let batchCreateNodeAndRel = async (data: batchCreateNodeAndRelItem[]) => {
     }
 };
 
+let preview = async (data: string[]) => {
+    let response = await apis.runAsync("previvew", {
+        data: data
+    });
+    if (response.StatusCode == 200) {
+        let msg = response.Body as ITouchstoneWebMessage;
+        if (msg.code == 0) {
+            return msg.result;
+        }
+        else {
+            throw msg.msg;
+        }
+    }
+    else {
+        throw `Failed, status code: ${response.StatusCode}`;
+    }
+};
+
+let confirm = async (force: boolean, oidsAndPaths: {
+    oid: string,
+    paths: string[]
+}[]) => {
+    let response = await apis.runAsync("previvew", {
+        force,
+        oidsAndPaths
+    });
+    if (response.StatusCode == 200) {
+        let msg = response.Body as ITouchstoneWebMessage;
+        if (msg.code == 0) {
+            return msg.result;
+        }
+        else {
+            throw msg.msg;
+        }
+    }
+    else {
+        throw `Failed, status code: ${response.StatusCode}`;
+    }
+};
+
+
 let getModelDefinition = (path: string) => {
     let extension = Path.GetExtension(path).toLowerCase();
     if (extension == ".catpart") {
@@ -215,10 +256,19 @@ let main = async () => {
     // 创建节点
     let batchCreateNodeAndRelInputItems = [] as batchCreateNodeAndRelItem[];
     let batchBindFilesInputItems = [] as batchBindFilesInputItem[];
+    let previewInput = [] as string[];
+    let confirmInput = [] as {
+        oid: string,
+        paths: string[]
+    }[];
     for (let item of importResult.importResult) {
         let metadata = uploadResult.Items.find(x => x.fileOriginalName == item.originFileName);
+        let inputRecord = input.Items.find(x => x.Document.fileName.toLowerCase() == item.lowerFormatFileName);
         if (metadata == undefined) {
             throw `Failed to find metadata for ${item.originFileName}`;
+        }
+        if (!inputRecord) {
+            throw `Failed to find input record for ${item.originFileName}`;
         }
         let batchCreateNodeAndRelItem = {
             boundingBox: "",
@@ -244,18 +294,25 @@ let main = async () => {
             fileName: item.originFileName,
             fileOid: metadata.oid,
             filePath: fileDirectory,
-            fileType:"CATIA R18",
+            fileType: "CATIA R18",
             lastModified: datetimeUtils.toFormatString(item.fileLastWriteTime, "yyyy-MM-dd HH:mm:ss"),
             nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
-            primary:true,
+            primary: true,
             nodeType: getModelDefinition(item.formatFileName),
             dsVersionModified: true,
 
         } as batchBindFilesInputItem;
         batchBindFilesInputItems.push(batchBindFilesInputItem);
+        previewInput.push(inputRecord.Document.remote.raw.oid);
+        confirmInput.push({
+            oid: inputRecord.Document.remote.raw.oid,
+            paths: inputRecord.Document.remote.raw.pdmCatalogFullPaths
+        });
     }
     await batchCreateNodeAndRel(batchCreateNodeAndRelInputItems);
     await batchBindFiles(batchBindFilesInputItems);
+    await preview(previewInput);
+    await confirm(false, confirmInput);
     File.WriteAllText(outputPath, JSON.stringify(output), utf8);
 };
 

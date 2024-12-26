@@ -1,0 +1,21 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://116.198.204.139:5001/",
+        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "data": [
+            "9a5ca033-e1f0-4e57-b561-1a52951763e2",
+            "f6e85b19-277a-4a51-8aed-a5a6384922b7",
+            "9d5c5f1b-f1e1-4f15-acc6-f1cf6bcf6860",
+            "ec5d72c1-93e3-406c-9f53-ee5b651ffb4c"
+        ]
+    },
+    "Method": "POST",
+    "Url": "$urlPrefix+`space-standalone/space-cad-server/mcads/checkin/preview`",
+    "Headers": {
+        "accesstoken": "$token",
+        "appName": "xplm"
+    },
+    "Body": "$data"
+}
