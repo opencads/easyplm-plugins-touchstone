@@ -11,10 +11,10 @@
     "Url": "$urlPrefix+`space-standalone/space-cad-server/mcadCatalogs/activate`",
     "Headers": {
         "accesstoken": "$token",
-        "appName": "xplm",
         "tenantOid": "$tenant_id"
     },
     "QueryParameters":{
-        "oid":"$oid"
+        "oid":"$oid",
+        "appName": "xplm"
     }
 }
