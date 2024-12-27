@@ -9,7 +9,7 @@
         "size": "",
         "searchKey": ""
     },
-    "Method": "GET",
+    "Method": "POST",
     "Url": "$urlPrefix+`pdm-standalone/container/container/product/search`",
     "Headers": {
         "accesstoken": "$token",
