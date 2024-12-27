@@ -36,7 +36,7 @@ if (Directory.Exists(cacheDirectory) == false) {
 let cacheLoginJsonPath = Path.Combine(cacheDirectory, "login.json");
 
 let create = async (containerModel: string, containerOid: string, name: string, pdmDefaultFullPaths: string[]) => {
-    let response = await apis.runAsync("activate", {
+    let response = await apis.runAsync("create", {
         containerModel,
         containerOid,
         name,
