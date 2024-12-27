@@ -1,0 +1,4 @@
+{
+    "Name": "container-folders-get",
+    "Entry": "tscl run {.}/main.ts --input {Input} --output {Output} --logger {Logger}"
+}

@@ -1,0 +1,23 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://116.198.204.139:5001/",
+        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "tenant_id": "$loginJson.tenant_id",
+        "index": "",
+        "size": "",
+        "searchKey": ""
+    },
+    "Method": "GET",
+    "Url": "$urlPrefix+`pdm-standalone/container/container/product/search`",
+    "Headers": {
+        "accesstoken": "$token",
+        "tenantOid": "$tenant_id"
+    },
+    "Body": {
+        "index": "$index",
+        "size": "$size",
+        "searchKey": "$searchKey"
+    }
+}
