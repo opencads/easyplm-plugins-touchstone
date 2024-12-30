@@ -152,7 +152,7 @@ let confirm = async (force: boolean, oidsAndPaths: {
     oid: string,
     paths: string[]
 }[]) => {
-    let response = await apis.runAsync("previvew", {
+    let response = await apis.runAsync("confirm", {
         force,
         oidsAndPaths
     });
