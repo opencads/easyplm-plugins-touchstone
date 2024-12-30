@@ -1,0 +1,5 @@
+{
+    "Name": "remote-workspaces-delete",
+    "Entry": "{.}/main.ts",
+    "Type": "TypeSharp"
+}
