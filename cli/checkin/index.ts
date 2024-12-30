@@ -229,16 +229,6 @@ let main = async () => {
         });
     }
     let importResult = await importDocumentsToWorkspace(importInput);
-    // 查询节点
-    let batchByNamesInputItems = [] as batchByNamesInputItem[];
-    for (let item of importResult.importResult) {
-        batchByNamesInputItems.push({
-            modelDefinition: getModelDefinition(item.lowerFormatFileName),
-            nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
-            nodeVersion: ""
-        });
-    }
-    let batchByNamesResult = await batchByNames(batchByNamesInputItems);
     // 对文件进行上载
     let uploadInput = {
         Items: []
@@ -256,23 +246,10 @@ let main = async () => {
     // 创建节点
     let batchCreateNodeAndRelInputItems = [] as batchCreateNodeAndRelItem[];
     let batchBindFilesInputItems = [] as batchBindFilesInputItem[];
-    let previewInput = [] as string[];
-    let confirmInput = [] as {
-        oid: string,
-        paths: string[]
-    }[];
     for (let item of importResult.importResult) {
         let metadata = uploadResult.Items.find(x => x.fileOriginalName == item.originFileName);
-        let inputRecord = input.Items.find(x => x.Document.fileName.toLowerCase() == item.lowerFormatFileName);
-        let queryRecord = batchByNamesResult.find(x => x.pdmMcad.name.toLowerCase() == Path.GetFileNameWithoutExtension(item.formatFileName).toLowerCase());
         if (metadata == undefined) {
             throw `Failed to find metadata for ${item.originFileName}`;
-        }
-        if (!inputRecord) {
-            throw `Failed to find input record for ${item.originFileName}`;
-        }
-        if (!queryRecord) {
-            throw `Failed to find query record for ${item.originFileName}`;
         }
         let batchCreateNodeAndRelItem = {
             boundingBox: "",
@@ -307,12 +284,38 @@ let main = async () => {
 
         } as batchBindFilesInputItem;
         batchBindFilesInputItems.push(batchBindFilesInputItem);
-
-        previewInput.push(queryRecord.spaceMcad.oid);
-        confirmInput.push({
-            oid: queryRecord.spaceMcad.oid,
-            paths: queryRecord.spaceMcad.pdmCatalogFullPaths
+    }
+    // 查询节点
+    let batchByNamesInputItems = [] as batchByNamesInputItem[];
+    for (let item of importResult.importResult) {
+        batchByNamesInputItems.push({
+            modelDefinition: getModelDefinition(item.lowerFormatFileName),
+            nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
+            nodeVersion: ""
         });
+    }
+    let batchByNamesResult = await batchByNames(batchByNamesInputItems);
+    // 检入
+    let previewInput = [] as string[];
+    let confirmInput = [] as {
+        oid: string,
+        paths: string[]
+    }[];
+    for (let item of importResult.importResult) {
+        let queryRecord = batchByNamesResult.find(x => x.pdmMcad.name.toLowerCase() == Path.GetFileNameWithoutExtension(item.formatFileName).toLowerCase());
+        if (!queryRecord) {
+            throw `Failed to find query record for ${item.originFileName}`;
+        }
+        if (queryRecord.spaceMcad.oid) {
+            previewInput.push(queryRecord.spaceMcad.oid);
+            confirmInput.push({
+                oid: queryRecord.spaceMcad.oid,
+                paths: queryRecord.spaceMcad.pdmCatalogFullPaths
+            });
+        }
+        else {
+            throw `Failed to find oid for ${item.originFileName}`;
+        }
     }
     await batchCreateNodeAndRel(batchCreateNodeAndRelInputItems);
     await batchBindFiles(batchBindFilesInputItems);
