@@ -131,7 +131,7 @@ let batchCreateNodeAndRel = async (data: batchCreateNodeAndRelItem[]) => {
 };
 
 let preview = async (data: string[]) => {
-    let response = await apis.runAsync("previvew", {
+    let response = await apis.runAsync("preview", {
         data: data
     });
     if (response.StatusCode == 200) {
