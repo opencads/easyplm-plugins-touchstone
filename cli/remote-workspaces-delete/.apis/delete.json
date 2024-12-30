@@ -7,7 +7,7 @@
         "tenant_id": "$loginJson.tenant_id",
         "oid": ""
     },
-    "Method": "POST",
+    "Method": "GET",
     "Url": "$urlPrefix+`space-standalone/space-cad-server/mcadCatalogs/delete`",
     "Headers": {
         "accesstoken": "$token",
