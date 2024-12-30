@@ -76,7 +76,7 @@ export interface IDocumentRecord {
 export interface ICheckInInput {
     Items: {
         FilePath: string,
-        Document:IDocumentRecord
+        Document: IDocumentRecord
     }[]
 }
 
@@ -90,14 +90,81 @@ export interface batchByNamesInputItem {
     "nodeVersion": string
 }
 
+interface Params {
+    ActivateBOM: string;
+    J_BOUNDINGBOX: string;
+    [key: string]: string
+}
+
+interface SpaceMcad {
+    oid: string;
+    type: string;
+    modelDefinition: null | undefined; // 使用 null | undefined 表示可能为 null
+    modelIcon: null | undefined;
+    markForDelete: boolean;
+    owner: string;
+    createBy: string;
+    createDate: number;
+    updateBy: string;
+    updateDate: number;
+    tenantOid: string;
+    orderBy: number;
+    name: string;
+    state: string;
+    pdmType: string;
+    pdmOwner: null | undefined;
+    pnumber: string;
+    opacity: string;
+    rgb: string;
+    subType: string;
+    refNodeName: null | undefined;
+    refNodeType: null | undefined;
+    pdmCatalogFullPaths: string[];
+    pdmVersion: string;
+    params: Params;
+    shapeInfo: null | undefined;
+    pmiInfo: null | undefined;
+    annotationInfo: null | undefined;
+    downloaded: boolean;
+    simpleIcon: null | undefined;
+    description: null | undefined;
+    userOid: string;
+    displayVersion: string;
+    lifecycleOid: string;
+    lifecycleStatus: string;
+    containerOid: string;
+    containerName: null | undefined;
+    containerType: string;
+    containerModel: string;
+    sourceOid: string;
+    checkin: boolean;
+    lockNote: null | undefined;
+    lockOwnerAccount: null | undefined;
+    lockOwnerOid: null | undefined;
+    lockedTime: null | undefined;
+    lockSourceOid: null | undefined;
+    fileLastModified: string;
+    spaceContainerOid: string;
+    spaceLifecycleCode: number;
+    spaceLifecycleStatus: string;
+    boundingBox: string;
+    pdmLatest: boolean;
+    primaryFiles: any[]; // 假设为任意类型数组，可以根据需要具体化
+    secondaryFiles: any[];
+    needCheckin: boolean;
+    checkinMessage: null | undefined;
+}
+
+interface PdmMcad {
+    fileLastModified: string;
+    displayVersion: string;
+    name: string;
+    modelDefinition: "CADAssembly" | "CADPart"
+}
+
 export interface batchByNamesOutputItem {
-    "spaceMcad": any,
-    "pdmMcad": {
-        "fileLastModified": any,
-        "displayVersion": string,
-        "name": string,
-        "modelDefinition": "CADAssembly" | "CADPart"
-    }
+    spaceMcad: SpaceMcad,
+    pdmMcad: PdmMcad
 }
 
 export interface batchCreateNodeAndRelItem {

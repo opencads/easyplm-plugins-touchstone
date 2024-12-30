@@ -264,11 +264,15 @@ let main = async () => {
     for (let item of importResult.importResult) {
         let metadata = uploadResult.Items.find(x => x.fileOriginalName == item.originFileName);
         let inputRecord = input.Items.find(x => x.Document.fileName.toLowerCase() == item.lowerFormatFileName);
+        let queryRecord = batchByNamesResult.find(x => x.pdmMcad.name.toLowerCase() == Path.GetFileNameWithoutExtension(item.formatFileName).toLowerCase());
         if (metadata == undefined) {
             throw `Failed to find metadata for ${item.originFileName}`;
         }
         if (!inputRecord) {
             throw `Failed to find input record for ${item.originFileName}`;
+        }
+        if (!queryRecord) {
+            throw `Failed to find query record for ${item.originFileName}`;
         }
         let batchCreateNodeAndRelItem = {
             boundingBox: "",
@@ -303,10 +307,11 @@ let main = async () => {
 
         } as batchBindFilesInputItem;
         batchBindFilesInputItems.push(batchBindFilesInputItem);
-        previewInput.push(inputRecord.Document.remote.raw.oid);
+
+        previewInput.push(queryRecord.spaceMcad.oid);
         confirmInput.push({
-            oid: inputRecord.Document.remote.raw.oid,
-            paths: inputRecord.Document.remote.raw.pdmCatalogFullPaths
+            oid: queryRecord.spaceMcad.oid,
+            paths: queryRecord.spaceMcad.pdmCatalogFullPaths
         });
     }
     await batchCreateNodeAndRel(batchCreateNodeAndRelInputItems);
