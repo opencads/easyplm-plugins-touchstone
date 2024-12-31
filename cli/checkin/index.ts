@@ -285,6 +285,8 @@ let main = async () => {
         } as batchBindFilesInputItem;
         batchBindFilesInputItems.push(batchBindFilesInputItem);
     }
+    await batchCreateNodeAndRel(batchCreateNodeAndRelInputItems);
+    await batchBindFiles(batchBindFilesInputItems);
     // 查询节点
     let batchByNamesInputItems = [] as batchByNamesInputItem[];
     for (let item of importResult.importResult) {
@@ -317,8 +319,7 @@ let main = async () => {
             throw `Failed to find oid for ${item.originFileName}`;
         }
     }
-    await batchCreateNodeAndRel(batchCreateNodeAndRelInputItems);
-    await batchBindFiles(batchBindFilesInputItems);
+    
     await preview(previewInput);
     await confirm(false, confirmInput);
     File.WriteAllText(outputPath, JSON.stringify(output), utf8);
