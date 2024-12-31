@@ -1,5 +1,6 @@
 import { DateTime } from "../.tsc/System/DateTime"
 import { Guid } from "../.tsc/System/Guid"
+import { RawJsonDocument } from "../basicInterfaces"
 
 export interface IImportInput {
     Items: {
@@ -28,6 +29,10 @@ export interface DocumentInterface {
     updateTime: DateTime,
     fileLastWriteTime: DateTime,
     fileLength: number
+}
+
+export interface IImportOutput extends DocumentInterface {
+    rawJson: RawJsonDocument
 }
 
 export interface IDocumentRecord {
@@ -175,8 +180,7 @@ export interface batchCreateNodeAndRelItem {
     "opacity": string,
     "pNumber": string,
     "params": {
-        "ActivateBOM": "1",
-        "J_BOUNDINGBOX": ""
+        [key: string]: string
     },
     "projName": string[],
     "rgb": string,

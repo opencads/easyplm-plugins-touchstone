@@ -6,7 +6,7 @@ import { Path } from '../.tsc/System/IO/Path';
 import { File } from '../.tsc/System/IO/File';
 import { UTF8Encoding } from '../.tsc/System/Text/UTF8Encoding';
 import { ITouchstoneWebMessage, WebMessage } from '../interfaces';
-import { DocumentInterface, ICheckInInput, ICheckInOutput, IImportInput, batchBindFilesInputItem, batchByNamesInputItem, batchByNamesOutputItem, batchCreateNodeAndRelItem } from './interfaces';
+import { DocumentInterface, ICheckInInput, ICheckInOutput, IImportInput, IImportOutput, batchBindFilesInputItem, batchByNamesInputItem, batchByNamesOutputItem, batchCreateNodeAndRelItem } from './interfaces';
 import { IUploadFileInput, IUploadFileOutput } from '../upload-file/interfaces';
 import { datetimeUtils } from "../.tsc/Cangjie/TypeSharp/System/datetimeUtils";
 
@@ -49,9 +49,7 @@ let callPlugin = async (pluginName: string, input: any) => {
 };
 
 let importDocumentsToWorkspace = async (input: IImportInput) => {
-    return await callPlugin('workspace-import-files', input) as {
-        importResult: DocumentInterface[]
-    };
+    return await callPlugin('workspace-import-files', input) as IImportOutput[];
 };
 
 let getContentArchivePath = async (contentMD5: string) => {
@@ -233,7 +231,7 @@ let main = async () => {
     let uploadInput = {
         Items: []
     } as IUploadFileInput;
-    for (let item of importResult.importResult) {
+    for (let item of importResult) {
         let archivePath = await getContentArchivePath(item.contentMD5);
         uploadInput.Items.push(
             {
@@ -246,11 +244,22 @@ let main = async () => {
     // 创建节点
     let batchCreateNodeAndRelInputItems = [] as batchCreateNodeAndRelItem[];
     let batchBindFilesInputItems = [] as batchBindFilesInputItem[];
-    for (let item of importResult.importResult) {
+    for (let item of importResult) {
         let metadata = uploadResult.Items.find(x => x.fileOriginalName == item.originFileName);
         if (metadata == undefined) {
             throw `Failed to find metadata for ${item.originFileName}`;
         }
+        let params = {
+            ActivateBOM: "1",
+            J_BOUNDINGBOX: ""
+        } as { [key: string]: string };
+        if (item.rawJson.Attributes) {
+            let keys = Object.keys(item.rawJson.Attributes);
+            for (let key of keys) {
+                params[key] = item.rawJson.Attributes[key];
+            }
+        }
+
         let batchCreateNodeAndRelItem = {
             boundingBox: "",
             dsVersionModified: true,
@@ -258,10 +267,7 @@ let main = async () => {
             nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
             opacity: "",
             pNumber: Path.GetFileNameWithoutExtension(item.formatFileName),
-            params: {
-                ActivateBOM: "1",
-                J_BOUNDINGBOX: ""
-            },
+            params: params,
             projName: [],
             rgb: "",
             state: "New",
@@ -289,7 +295,7 @@ let main = async () => {
     await batchBindFiles(batchBindFilesInputItems);
     // 查询节点
     let batchByNamesInputItems = [] as batchByNamesInputItem[];
-    for (let item of importResult.importResult) {
+    for (let item of importResult) {
         batchByNamesInputItems.push({
             modelDefinition: getModelDefinition(item.lowerFormatFileName),
             nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
@@ -303,7 +309,7 @@ let main = async () => {
         oid: string,
         paths: string[]
     }[];
-    for (let item of importResult.importResult) {
+    for (let item of importResult) {
         let queryRecord = batchByNamesResult.find(x => x.pdmMcad.name.toLowerCase() == Path.GetFileNameWithoutExtension(item.formatFileName).toLowerCase());
         if (!queryRecord) {
             throw `Failed to find query record for ${item.originFileName}`;
