@@ -129,10 +129,7 @@ let main = async () => {
                 type: 'string'
             });
         }
-        if (row.state == "New") {
-            document.remote.remoteState = 'new';
-        }
-        else if (row.checkin) {
+        if (row.checkin) {
             document.remote.remoteState = 'checkedIn';
         }
         else {
