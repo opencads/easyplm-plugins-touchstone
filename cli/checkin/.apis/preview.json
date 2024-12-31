@@ -4,6 +4,7 @@
         "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
         "loginJson": "$Json.Load(loginJsonPath)",
         "token": "$loginJson.token",
+        "tenantOid": "$loginJson.tenant_id",
         "data": [
             "9a5ca033-e1f0-4e57-b561-1a52951763e2",
             "f6e85b19-277a-4a51-8aed-a5a6384922b7",
@@ -15,7 +16,8 @@
     "Url": "$urlPrefix+`space-standalone/space-cad-server/mcads/checkin/preview`",
     "Headers": {
         "accesstoken": "$token",
-        "appName": "xplm"
+        "appName": "xplm",
+        "tenantOid": "$tenantOid"
     },
     "Body": "$data"
 }

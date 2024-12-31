@@ -4,6 +4,7 @@
         "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
         "loginJson": "$Json.Load(loginJsonPath)",
         "token": "$loginJson.token",
+        "tenantOid": "$loginJson.tenant_id",
         "nodes": [
             {
                 "boundingBox": "",
@@ -34,7 +35,8 @@
     },
     "Headers": {
         "accesstoken": "$token",
-        "appName": "xplm"
+        "appName": "xplm",
+        "tenantOid": "$tenantOid"
     },
     "Body": {
         "nodes":"$nodes",
