@@ -38,27 +38,9 @@ if (Directory.Exists(cacheDirectory) == false) {
 }
 let cacheLoginJsonPath = Path.Combine(cacheDirectory, "login.json");
 
-let getTenantInfo = async () => {
-    let response = await apis.runAsync("tenantInfo", {
-
-    });
-    if (response.StatusCode == 200) {
-        let msg = response.Body as ITouchstoneWebMessage;
-        if (msg.code == 0) {
-            return msg.result as TenantInfoResult;
-        }
-        else {
-            throw msg.msg;
-        }
-    }
-    else {
-        throw `Failed, status code: ${response.StatusCode}`;
-    }
-};
-
-let getActiveWorkspace = async (tenantOid: string) => {
+let getActiveWorkspace = async () => {
     let response = await apis.runAsync("activeWorkspace", {
-        tenantOid
+
     });
     if (response.StatusCode == 200) {
         let msg = response.Body as ITouchstoneWebMessage;
@@ -74,9 +56,8 @@ let getActiveWorkspace = async (tenantOid: string) => {
     }
 };
 
-let getlist = async (tenantOid: string, mcadCatalogOid: string, size: number, page: number) => {
+let getlist = async (mcadCatalogOid: string, size: number, page: number) => {
     let response = await apis.runAsync("getlist", {
-        tenantOid,
         mcadCatalogOid,
         page,
         size
@@ -117,10 +98,9 @@ let main = async () => {
         File.WriteAllText(outputPath, JSON.stringify(output), utf8);
         return;
     }
-    let tenant = await getTenantInfo();
-    let workspace = await getActiveWorkspace(tenant.defaultTanant.oid);
+    let workspace = await getActiveWorkspace();
     let tasks = [] as any[];
-    let firstPage = await getlist(tenant.defaultTanant.oid, workspace.oid, 9999, 1);
+    let firstPage = await getlist(workspace.oid, 9999, 1);
     let result = [] as IDocumentRecord[];
     for (let row of firstPage.rows) {
         let document = {} as IDocumentRecord;

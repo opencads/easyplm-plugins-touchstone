@@ -7,7 +7,8 @@ import { Path } from '../.tsc/System/IO/Path';
 import { Directory } from '../.tsc/System/IO/Directory';
 import { apis } from "../.tsc/Cangjie/TypeSharp/System/apis";
 import { DateTime } from '../.tsc/System/DateTime';
-import { ILoginInfomation } from '../interfaces';
+import { ILoginInfomation, ITouchstoneWebMessage } from '../interfaces';
+import { batchByNamesInputItem, batchByNamesOutputItem } from "../checkin/interfaces";
 let utf8 = new UTF8Encoding(false);
 let parameters = {} as { [key: string]: string };
 for (let i = 0; i < args.length; i++) {
@@ -32,6 +33,24 @@ if (Directory.Exists(cacheDirectory) == false) {
     Directory.CreateDirectory(cacheDirectory);
 }
 let cacheLoginJsonPath = Path.Combine(cacheDirectory, "login.json");
+
+let batchByNames = async (data: batchByNamesInputItem[]) => {
+    let response = await apis.runAsync("batchByNames", {
+        data: data
+    });
+    if (response.StatusCode == 200) {
+        let msg = response.Body as ITouchstoneWebMessage;
+        if (msg.code == 0) {
+            return msg.result as batchByNamesOutputItem[];
+        }
+        else {
+            throw msg.msg;
+        }
+    }
+    else {
+        throw `Failed, status code: ${response.StatusCode}`;
+    }
+};
 
 let main = async () => {
     let inputPath = parameters.i ?? parameters.input;

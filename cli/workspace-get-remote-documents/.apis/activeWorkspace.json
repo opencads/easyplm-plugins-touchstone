@@ -4,7 +4,7 @@
         "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
         "loginJson": "$Json.Load(loginJsonPath)",
         "token": "$loginJson.token",
-        "tenantOid": ""
+        "tenantOid": "$loginJson.tenant_id"
     },
     "Method": "GET",
     "Url": "$urlPrefix+`space-standalone/space-cad-server/mcadCatalogs/activeWorkspace`",
