@@ -189,7 +189,7 @@ let getType = (path: string) => {
     if (extension == ".catpart") {
         return "Part";
     }
-    else if (extension == ".catassembly") {
+    else if (extension == ".catproduct") {
         return "Assembly";
     }
     else {
@@ -319,7 +319,7 @@ let main = async () => {
             throw `Failed to find oid for ${item.originFileName}`;
         }
     }
-    
+
     await preview(previewInput);
     await confirm(false, confirmInput);
     File.WriteAllText(outputPath, JSON.stringify(output), utf8);
