@@ -176,7 +176,7 @@ let getModelDefinition = (path: string) => {
     if (extension == ".catpart") {
         return "CADPart";
     }
-    else if (extension == ".catassembly") {
+    else if (extension == ".catproduct") {
         return "CADAssembly";
     }
     else {
