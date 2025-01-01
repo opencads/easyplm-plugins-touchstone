@@ -104,6 +104,7 @@ let main = async () => {
     let result = [] as IDocumentRecord[];
     for (let row of firstPage.rows) {
         let document = {} as IDocumentRecord;
+        document.key = row.oid;
         document.name = row.name;
         document.fileName = "";
         if (row.primaryFiles) {
