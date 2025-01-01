@@ -6,7 +6,7 @@ import { Path } from '../.tsc/System/IO/Path';
 import { File } from '../.tsc/System/IO/File';
 import { UTF8Encoding } from '../.tsc/System/Text/UTF8Encoding';
 import { ITouchstoneWebMessage, WebMessage } from '../interfaces';
-import { DocumentInterface, ICheckInInput, ICheckInOutput, IImportInput, IImportOutput, batchBindFilesInputItem, batchByNamesInputItem, batchByNamesOutputItem, batchCreateNodeAndRelItem } from './interfaces';
+import { DocumentInterface, ICheckInInput, ICheckInOutput, IImportInput, IImportOutput, InstanceInfo, ReferenceInfo, batchBindFilesInputItem, batchByNamesInputItem, batchByNamesOutputItem, batchCreateNodeItem, batchCreateRelItem } from './interfaces';
 import { IUploadFileInput, IUploadFileOutput } from '../upload-file/interfaces';
 import { datetimeUtils } from "../.tsc/Cangjie/TypeSharp/System/datetimeUtils";
 
@@ -110,9 +110,10 @@ let batchBindFiles = async (data: batchBindFilesInputItem[]) => {
     }
 };
 
-let batchCreateNodeAndRel = async (data: batchCreateNodeAndRelItem[]) => {
+let batchCreateNodeAndRel = async (nodes: batchCreateNodeItem[], rels: batchCreateRelItem[]) => {
     let response = await apis.runAsync("batchCreateNodeAndRel", {
-        nodes: data
+        nodes,
+        rels
     });
     if (response.StatusCode == 200) {
         let msg = response.Body as ITouchstoneWebMessage;
@@ -241,8 +242,30 @@ let main = async () => {
         );
     }
     let uploadResult = await upload(uploadInput);
+    // 遍历子件，如果子件在本地没有，就从系统查询
+    let toQueryNodeNames = [] as string[];
+    for (let item of importResult) {
+        let children = item.rawJson.Children;
+        if (children) {
+            for (let child of children) {
+                let queryRecord = importResult.find(x => x.formatFileName == child.FileName);
+                if (!queryRecord) {
+                    toQueryNodeNames.push(Path.GetFileNameWithoutExtension(child.FileName));
+                }
+            }
+        }
+    }
+    // 查询子件，补充信息，用于创建节点
+    let queryNodes = await batchByNames(toQueryNodeNames.map(x => {
+        return {
+            modelDefinition: getModelDefinition(x),
+            nodeName: Path.GetFileNameWithoutExtension(x),
+            nodeVersion: ""
+        };
+    }));
     // 创建节点
-    let batchCreateNodeAndRelInputItems = [] as batchCreateNodeAndRelItem[];
+    let batchCreateNodes = [] as batchCreateNodeItem[];
+    let batchCreateRels = [] as batchCreateRelItem[];
     let batchBindFilesInputItems = [] as batchBindFilesInputItem[];
     for (let item of importResult) {
         let metadata = uploadResult.Items.find(x => x.fileOriginalName == item.originFileName);
@@ -260,7 +283,7 @@ let main = async () => {
             }
         }
 
-        let batchCreateNodeAndRelItem = {
+        let batchCreateNode = {
             boundingBox: "",
             dsVersionModified: true,
             fileLastModified: datetimeUtils.toFormatString(item.fileLastWriteTime, "yyyy-MM-dd HH:mm:ss"),
@@ -274,8 +297,8 @@ let main = async () => {
             subType: getType(item.formatFileName),
             toCreateVersion: "A.1",
             type: getModelDefinition(item.lowerFormatFileName),
-        } as batchCreateNodeAndRelItem;
-        batchCreateNodeAndRelInputItems.push(batchCreateNodeAndRelItem);
+        } as batchCreateNodeItem;
+        batchCreateNodes.push(batchCreateNode);
 
         let batchBindFilesInputItem = {
             fileName: item.originFileName,
@@ -290,8 +313,87 @@ let main = async () => {
 
         } as batchBindFilesInputItem;
         batchBindFilesInputItems.push(batchBindFilesInputItem);
+
+
     }
-    await batchCreateNodeAndRel(batchCreateNodeAndRelInputItems);
+    for (let item of importResult) {
+        let batchCreateNode = batchCreateNodes.find(x => x.nodeName == Path.GetFileNameWithoutExtension(item.formatFileName));
+        if (!batchCreateNode) {
+            throw `Failed to find batchCreateNode for ${item.originFileName}`;
+        }
+        let batchCreateRefItem = {
+            children: [] as {
+                instanceInfo: InstanceInfo,
+                referenceInfo: ReferenceInfo
+            }[]
+        } as batchCreateRelItem;
+        batchCreateRels.push(batchCreateRefItem);
+        batchCreateRefItem.referenceInfo = batchCreateNode;
+        batchCreateRefItem.fileInfo = {
+            fileLastModified: datetimeUtils.toFormatString(item.fileLastWriteTime, "yyyy-MM-dd HH:mm:ss"),
+            fileName: item.originFileName,
+            filePath: fileDirectory,
+            fileType: "CATIA R18",
+            nodeName: Path.GetFileNameWithoutExtension(item.formatFileName),
+            dsVersionModified: true,
+            primary: true,
+            lastModified: datetimeUtils.toFormatString(item.fileLastWriteTime, "yyyy-MM-dd HH:mm:ss"),
+            isLight: false,
+            nodeType: getModelDefinition(item.formatFileName),
+            command: "CheckIn"
+        };
+        let childIndex = -1;
+        if (item.rawJson.Children) {
+            childIndex++;
+            for (let child of item.rawJson.Children) {
+                let childNode = {
+
+                } as {
+                    instanceInfo: InstanceInfo,
+                    referenceInfo: ReferenceInfo
+                };
+                let queryBatchCreateNode = batchCreateNodes.find(x => x.nodeName == Path.GetFileNameWithoutExtension(child.FileName));
+                if(queryBatchCreateNode){
+                    childNode.referenceInfo = queryBatchCreateNode;
+                    childNode.instanceInfo = {
+                        index: childIndex.toString(),
+                        name: Path.GetFileNameWithoutExtension(child.FileName),
+                        opacity: "",
+                        position: child.ComponentProperties.Matrix.join(" "),
+                        rgb: ""
+                    };
+                    batchCreateRefItem.children.push(childNode);
+                    continue;
+                }
+                let queryNode = queryNodes.find(x => x.pdmMcad.name.toLowerCase() == Path.GetFileNameWithoutExtension(child.FileName).toLowerCase());
+                if (queryNode) {
+                    childNode.referenceInfo = {
+                        boundingBox: "",
+                        dsVersionModified: true,
+                        fileLastModified: queryNode.spaceMcad.fileLastModified,
+                        nodeName: queryNode.pdmMcad.name,
+                        opacity: "",
+                        pNumber: queryNode.pdmMcad.name,
+                        state: queryNode.spaceMcad.state,
+                        subType: queryNode.spaceMcad.subType,
+                        toCreateVersion: queryNode.spaceMcad.pdmVersion,
+                        type: queryNode.spaceMcad.type
+                    }
+                    childNode.instanceInfo = {
+                        index: childIndex.toString(),
+                        name: Path.GetFileNameWithoutExtension(child.FileName),
+                        opacity: "",
+                        position: child.ComponentProperties.Matrix.join(" "),
+                        rgb: ""
+                    };
+                    batchCreateRefItem.children.push(childNode);
+                    continue;
+                }
+                throw `Failed to find queryNode for ${child.FileName}`;
+            }
+        }
+    }
+    await batchCreateNodeAndRel(batchCreateNodes, batchCreateRels);
     await batchBindFiles(batchBindFilesInputItems);
     // 查询节点
     let batchByNamesInputItems = [] as batchByNamesInputItem[];

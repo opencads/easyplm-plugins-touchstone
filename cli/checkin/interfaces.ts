@@ -172,22 +172,8 @@ export interface batchByNamesOutputItem {
     pdmMcad: PdmMcad
 }
 
-export interface batchCreateNodeAndRelItem {
-    "boundingBox": string,
-    "dsVersionModified": boolean,
-    "fileLastModified": string,
-    "nodeName": string,
-    "opacity": string,
-    "pNumber": string,
-    "params": {
-        [key: string]: string
-    },
-    "projName": string[],
-    "rgb": string,
-    "state": "New",
-    "subType": "Assembly" | "Part",
-    "toCreateVersion": string,
-    "type": "CADAssembly" | "CADPart"
+export interface batchCreateNodeItem extends ReferenceInfo {
+
 }
 
 export interface batchBindFilesInputItem {
@@ -200,4 +186,53 @@ export interface batchBindFilesInputItem {
     "primary": boolean,
     "nodeType": "CADAssembly" | "CADPart",
     "dsVersionModified": boolean
+}
+
+export interface InstanceInfo {
+    index: string;
+    name: string;
+    opacity: string; // 假设这是一个可选的字符串字段
+    position: string;
+    rgb: string; // 假设这是一个可选的字符串字段
+}
+
+export interface ReferenceInfo {
+    boundingBox: string;
+    dsVersionModified: boolean;
+    fileLastModified: string;
+    nodeName: string;
+    opacity?: string;
+    pNumber: string;
+    params?: {
+        [key: string]: string
+    };
+    projName?: [];
+    rgb?: string;
+    state: "New" | "Modified" | string;
+    subType: "Assembly" | "Part" | string;
+    toCreateVersion: string;
+    type: "CADAssembly" | "CADPart" | string;
+}
+
+export interface FileInfo {
+    fileLastModified: string;
+    fileName: string;
+    filePath: string;
+    fileType: string;
+    nodeName: string;
+    dsVersionModified: boolean;
+    primary: boolean;
+    lastModified: string;
+    isLight: boolean;
+    nodeType: string;
+    command: string;
+}
+
+export interface batchCreateRelItem {
+    children: {
+        instanceInfo: InstanceInfo,
+        referenceInfo: ReferenceInfo
+    }[],
+    fileInfo: FileInfo,
+    referenceInfo: ReferenceInfo
 }
