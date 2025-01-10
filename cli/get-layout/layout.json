@@ -4,13 +4,13 @@
             "key": "documents",
             "icon": "documents",
             "title": "Documents",
-            "url": "/xplm-ui-home/documents"
+            "url": "/easyplm-ui-home/documents"
         },
         {
             "key": "workspaces",
             "icon": "workspaces",
             "title": "Workspaces",
-            "url": "/xplm-ui-home/workspaces"
+            "url": "/easyplm-ui-home/workspaces"
         }
     ]
 }
