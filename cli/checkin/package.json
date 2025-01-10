@@ -1,5 +1,5 @@
 {
     "Name": "checkin",
     "Entry": "{.}/index.ts",
-    "Type": "TypeSharp"
+    "Type": "TypeSharp-Progress"
 }

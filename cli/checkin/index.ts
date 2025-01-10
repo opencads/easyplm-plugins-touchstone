@@ -1,14 +1,16 @@
-import { args, setLoggerPath } from '../.tsc/context';
+import { apis, args, setLoggerPath } from '../.tsc/context';
 import { Json } from '../.tsc/TidyHPC/LiteJson/Json';
-import { apis } from '../.tsc/Cangjie/TypeSharp/System/apis';
 import { axios } from '../.tsc/Cangjie/TypeSharp/System/axios';
 import { Path } from '../.tsc/System/IO/Path';
 import { File } from '../.tsc/System/IO/File';
 import { UTF8Encoding } from '../.tsc/System/Text/UTF8Encoding';
-import { ITouchstoneWebMessage, WebMessage } from '../interfaces';
+import { IProgresser, ITouchstoneWebMessage, WebMessage } from '../interfaces';
 import { DocumentInterface, ICheckInInput, ICheckInOutput, IImportInput, IImportOutput, InstanceInfo, ReferenceInfo, batchBindFilesInputItem, batchByNamesInputItem, batchByNamesOutputItem, batchCreateNodeItem, batchCreateRelItem } from './interfaces';
 import { IUploadFileInput, IUploadFileOutput } from '../upload-file/interfaces';
 import { datetimeUtils } from "../.tsc/Cangjie/TypeSharp/System/datetimeUtils";
+import { Guid } from '../.tsc/System/Guid';
+import { fileUtils } from "../.tsc/Cangjie/TypeSharp/System/fileUtils";
+import { DateTime } from '../.tsc/System/DateTime';
 
 let utf8 = new UTF8Encoding(false);
 let parameters = {} as { [key: string]: string };
@@ -28,6 +30,51 @@ for (let i = 0; i < args.length; i++) {
     }
 }
 console.log(parameters);
+
+let Progresser = (progressPath: string, start: number, length: number) => {
+    return {} as IProgresser;
+};
+Progresser = (progressPath: string, start: number, length: number) => {
+    let current = start;
+    let recordByPercent = (item: {
+        parentID?: string,
+        id?: string,
+        percent: number,
+        message?: string,
+        status?: 'todo' | 'doing' | 'success' | 'failed',
+        data?: any
+    }) => {
+        current = start + length * item.percent;
+        fileUtils.writeLineWithShare(progressPath, `${Guid.NewGuid().ToString()} ${JSON.stringify({
+            dateTime: DateTime.Now.ToString("O"),
+            progress: current,
+            ...item
+        }, null, 0)}`);
+    };
+    let recordByIncrease = (item: {
+        parentID?: string,
+        id?: string,
+        increase: number,
+        message?: string,
+        status?: 'todo' | 'doing' | 'success' | 'failed',
+        data?: any
+    }) => {
+        current += item.increase * length;
+        fileUtils.writeLineWithShare(progressPath, `${Guid.NewGuid().ToString()} ${JSON.stringify({
+            dateTime: DateTime.Now.ToString("O"),
+            progress: current,
+            ...item
+        }, null, 0)}`);
+    };
+    let getSubProgresserByPercent = (percent: number) => {
+        return Progresser(progressPath, current, length * percent);
+    };
+    return {
+        recordByPercent,
+        recordByIncrease,
+        getSubProgresserByPercent
+    };
+};
 
 let callPlugin = async (pluginName: string, input: any) => {
     let response = await apis.runAsync("run", {
@@ -201,6 +248,7 @@ let main = async () => {
     let outputPath = parameters.o ?? parameters.output;
     let loggerPath = parameters.l ?? parameters.logger;
     let progresserPath = parameters.p ?? parameters.progress ?? parameters.progresser;
+    let progresser = Progresser(progresserPath, 0, 1);
     if (inputPath == undefined || inputPath == null) {
         throw "inputPath is required";
     }
@@ -215,6 +263,13 @@ let main = async () => {
     let output = {} as any;
     setLoggerPath(loggerPath);
     // 先进行本地归档
+    let progressID_archive = Guid.NewGuid().ToString();
+    progresser.recordByPercent({
+        id: progressID_archive,
+        percent: 0.0,
+        message: `Archive files`,
+        status: 'doing'
+    });
     let importInput = {
         Items: []
     } as IImportInput;
@@ -228,7 +283,19 @@ let main = async () => {
         });
     }
     let importResult = await importDocumentsToWorkspace(importInput);
+    progresser.recordByPercent({
+        id: progressID_archive,
+        percent: 0.2,
+        status: 'success'
+    });
     // 对文件进行上载
+    let progressID_upload = Guid.NewGuid().ToString();
+    progresser.recordByPercent({
+        id: progressID_upload,
+        percent: 0.2,
+        message: `Upload files`,
+        status: 'doing'
+    });
     let uploadInput = {
         Items: []
     } as IUploadFileInput;
@@ -242,6 +309,11 @@ let main = async () => {
         );
     }
     let uploadResult = await upload(uploadInput);
+    progresser.recordByPercent({
+        id: progressID_upload,
+        percent: 0.3,
+        status: 'success'
+    });
     // 遍历子件，如果子件在本地没有，就从系统查询
     let toQueryNodeNames = [] as string[];
     for (let item of importResult) {
@@ -256,6 +328,13 @@ let main = async () => {
         }
     }
     // 查询子件，补充信息，用于创建节点
+    let progressID_batchByNames = Guid.NewGuid().ToString();
+    progresser.recordByPercent({
+        id: progressID_batchByNames,
+        percent: 0.3,
+        message: `Query nodes from system`,
+        status: 'doing'
+    });
     let queryNodes = await batchByNames(toQueryNodeNames.map(x => {
         return {
             modelDefinition: getModelDefinition(x),
@@ -263,6 +342,11 @@ let main = async () => {
             nodeVersion: ""
         };
     }));
+    progresser.recordByPercent({
+        id: progressID_batchByNames,
+        percent: 0.4,
+        status: 'success'
+    });
     // 创建节点
     let batchCreateNodes = [] as batchCreateNodeItem[];
     let batchCreateRels = [] as batchCreateRelItem[];
@@ -353,7 +437,7 @@ let main = async () => {
                     referenceInfo: ReferenceInfo
                 };
                 let queryBatchCreateNode = batchCreateNodes.find(x => x.nodeName == Path.GetFileNameWithoutExtension(child.FileName));
-                if(queryBatchCreateNode){
+                if (queryBatchCreateNode) {
                     childNode.referenceInfo = queryBatchCreateNode;
                     childNode.instanceInfo = {
                         index: childIndex.toString(),
@@ -393,8 +477,32 @@ let main = async () => {
             }
         }
     }
+    let progressID_batchCreateNodeAndRel = Guid.NewGuid().ToString();
+    progresser.recordByPercent({
+        id: progressID_batchCreateNodeAndRel,
+        percent: 0.4,
+        message: `Create nodes and relations`,
+        status: 'doing'
+    });
     await batchCreateNodeAndRel(batchCreateNodes, batchCreateRels);
+    progresser.recordByPercent({
+        id: progressID_batchCreateNodeAndRel,
+        percent: 0.5,
+        status: 'success'
+    });
+    let progressID_batchBindFiles = Guid.NewGuid().ToString();
+    progresser.recordByPercent({
+        id: progressID_batchBindFiles,
+        percent: 0.5,
+        message: `Bind Files`,
+        status: 'doing'
+    });
     await batchBindFiles(batchBindFilesInputItems);
+    progresser.recordByPercent({
+        id: progressID_batchBindFiles,
+        percent: 0.6,
+        status: 'success'
+    });
     // 查询节点
     let batchByNamesInputItems = [] as batchByNamesInputItem[];
     for (let item of importResult) {
@@ -404,7 +512,19 @@ let main = async () => {
             nodeVersion: ""
         });
     }
+    let progressID_batchByNamesForCheckIn = Guid.NewGuid().ToString();
+    progresser.recordByPercent({
+        id: progressID_batchByNamesForCheckIn,
+        percent: 0.6,
+        message: `Query nodes for check in`,
+        status: 'doing'
+    });
     let batchByNamesResult = await batchByNames(batchByNamesInputItems);
+    progresser.recordByPercent({
+        id: progressID_batchByNamesForCheckIn,
+        percent: 0.7,
+        status: 'success'
+    });
     // 检入
     let previewInput = [] as string[];
     let confirmInput = [] as {
@@ -427,9 +547,32 @@ let main = async () => {
             throw `Failed to find oid for ${item.originFileName}`;
         }
     }
-
+    let progressID_preview = Guid.NewGuid().ToString();
+    progresser.recordByPercent({
+        id: progressID_preview,
+        percent: 0.7,
+        message: `CheckIn review`,
+        status: 'doing'
+    });
     await preview(previewInput);
+    progresser.recordByPercent({
+        id: progressID_preview,
+        percent: 0.8,
+        status: 'success'
+    });
+    let progressID_confirm = Guid.NewGuid().ToString();
+    progresser.recordByPercent({
+        id: progressID_confirm,
+        percent: 0.8,
+        message: `CheckIn confirm`,
+        status: 'doing'
+    });
     await confirm(false, confirmInput);
+    progresser.recordByPercent({
+        id: progressID_confirm,
+        percent: 0.9,
+        status: 'success'
+    });
     File.WriteAllText(outputPath, JSON.stringify(output), utf8);
 };
 

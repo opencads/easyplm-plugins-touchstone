@@ -46,3 +46,33 @@ export interface WebMessage {
     message: string;
     data: any;
 }
+
+export interface IProgress {
+    dateTime?: string,
+    progress: number,
+    message?: string,
+    parentID?: string,
+    id?: string,
+    status?: 'todo' | 'doing' | 'success' | 'failed',
+    data?: any
+}
+
+export interface IProgresser {
+    recordByPercent: (item: {
+        parentID?: string,
+        id?: string,
+        percent: number,
+        message?: string,
+        status?: 'todo' | 'doing' | 'success' | 'failed',
+        data?: any
+    }) => void;
+    recordByIncrease: (item: {
+        parentID?: string,
+        id?: string,
+        increase: number,
+        message?: string,
+        status?: 'todo' | 'doing' | 'success' | 'failed',
+        data?: any
+    }) => void;
+    getSubProgresserByPercent: (percent: number) => IProgresser;
+}
