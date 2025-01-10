@@ -551,7 +551,7 @@ let main = async () => {
     progresser.recordByPercent({
         id: progressID_preview,
         percent: 0.7,
-        message: `CheckIn review`,
+        message: `CheckIn preview`,
         status: 'doing'
     });
     await preview(previewInput);
