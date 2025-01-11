@@ -1,0 +1,21 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://localhost:19799",
+        "items": [
+            {
+                "contentMD5": "",
+                "attachments": [
+                    {
+                        "filePath": "",
+                        "contentMD5": ""
+                    }
+                ]
+            }
+        ]
+    },
+    "Method": "POST",
+    "Url": "$urlPrefix+`/api/v1/easyplm/archiveAttachments`",
+    "Body": {
+        "items": "$items"
+    }
+}

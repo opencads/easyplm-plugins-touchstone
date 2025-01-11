@@ -1,0 +1,34 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://116.198.204.139:5001/",
+        "loginJsonPath": "$`${env('userprofile')}/.easyplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "data": [
+            {
+                "fileName": "1001100-CHB041_A.1.png",
+                "fileOid": "6b0ab3b5-78f9-4fd5-abc0-34c83216be2b",
+                "filePath": "D:\\STP",
+                "fileType": "stp",
+                "lastModified": "2025/1/3 15:03:00",
+                "nodeName": "1001100-CHB041",
+                "primary": false,
+                "nodeType": "CADAssembly",
+                "pdmVersion": "A.1"
+            }
+        ]
+    },
+    "Method": "POST",
+    "Url": "$urlPrefix+`space-standalone/space-cad-server/mcads/batchBindSecondaryFiles`",
+    "QueryParameters": {
+        "checkin": "false"
+    },
+    "Headers": {
+        "accesstoken": "$token",
+        "appName": "easyplm"
+    },
+    "Body": {
+        "Type": "Json",
+        "Data": "$data"
+    }
+}

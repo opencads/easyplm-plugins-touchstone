@@ -101,7 +101,7 @@ interface Params {
     [key: string]: string
 }
 
-interface SpaceMcad {
+export interface SpaceMcad {
     oid: string;
     type: string;
     modelDefinition: null | undefined; // 使用 null | undefined 表示可能为 null
@@ -236,3 +236,15 @@ export interface batchCreateRelItem {
     fileInfo: FileInfo,
     referenceInfo: ReferenceInfo
 }
+
+export interface batchBindSecondaryFile {
+    fileName: string;
+    fileOid: string;
+    filePath: string;
+    fileType: string;
+    lastModified: string;
+    nodeName: string;
+    primary: boolean;
+    nodeType: string;
+    pdmVersion: string;
+  }

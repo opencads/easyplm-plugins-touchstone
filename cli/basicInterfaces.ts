@@ -1,3 +1,5 @@
+import { Guid } from "./.tsc/System/Guid";
+
 export interface IDocumentRecord {
     key:string,
     name: string;
@@ -123,6 +125,23 @@ export interface RawJson {
     DocInfo: DocInfo;
     Documents: RawJsonDocument[];
 }
+
+export interface ContentToAttachmentRelation {
+    id: Guid,
+    key: string,
+    extensionKey: string,
+    contentMD5: string,
+    attachmentFileName: string,
+    attachmentMD5: string
+}
+
+export interface ArchiveAttachmentItem {
+    contentMD5: string,
+    attachments: {
+        filePath: string,
+        contentMD5: string,
+    }[]
+};
 
 
 export interface WebMessage {

@@ -76,3 +76,4 @@ export interface IProgresser {
     }) => void;
     getSubProgresserByPercent: (percent: number) => IProgresser;
 }
+

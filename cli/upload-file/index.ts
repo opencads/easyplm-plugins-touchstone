@@ -1,7 +1,6 @@
-import { apis } from "../.tsc/Cangjie/TypeSharp/System/apis";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
 import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
-import { args, setLoggerPath } from "../.tsc/context";
+import { apis, args, setLoggerPath } from "../.tsc/context";
 import { ITouchstoneWebMessage } from "../interfaces";
 import { IUploadFileInput, IUploadFileOutput } from "./interfaces";
 import { fileUtils } from "../.tsc/Cangjie/TypeSharp/System/fileUtils";
