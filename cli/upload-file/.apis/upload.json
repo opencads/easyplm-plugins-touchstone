@@ -1,7 +1,7 @@
 {
     "Parameters": {
         "url": "",
-        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJsonPath": "$`${env('userprofile')}/.easyplm/cache/login.json`",
         "loginJson": "$Json.Load(loginJsonPath)",
         "token": "$loginJson.token",
         "filePath": ""
@@ -10,7 +10,7 @@
     "Url": "$url",
     "Headers": {
         "accesstoken": "$token",
-        "appName": "xplm"
+        "appName": "easyplm"
     },
     "Body": {
         "Type": "Binary",

@@ -1,22 +1,22 @@
 {
     "Parameters": {
         "urlPrefix": "http://116.198.204.139:5001/",
-        "loginJsonPath": "$`${env('userprofile')}/.xplm/cache/login.json`",
+        "loginJsonPath": "$`${env('userprofile')}/.easyplm/cache/login.json`",
         "loginJson": "$Json.Load(loginJsonPath)",
         "token": "$loginJson.token",
         "fileSize": "",
-        "fileName":"",
-        "bucketName":""
+        "fileName": "",
+        "bucketName": ""
     },
     "Method": "POST",
     "Url": "$urlPrefix+`pdm-standalone/file-micro/file/createFileMetadata`",
     "Headers": {
         "accesstoken": "$token",
-        "appName": "xplm"
+        "appName": "easyplm"
     },
-    "Body":{
-        "fileSize":"$fileSize",
-        "fileName":"$fileName",
-        "bucketName":"$bucketName"
+    "Body": {
+        "fileSize": "$fileSize",
+        "fileName": "$fileName",
+        "bucketName": "$bucketName"
     }
 }

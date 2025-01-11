@@ -27,7 +27,7 @@ for (let i = 0; i < args.length; i++) {
 }
 console.log(parameters);
 
-let cacheDirectory = Path.Combine(env('userprofile'), ".xplm", "cache");
+let cacheDirectory = Path.Combine(env('userprofile'), ".easyplm", "cache");
 if (Directory.Exists(cacheDirectory) == false) {
     Directory.CreateDirectory(cacheDirectory);
 }
@@ -94,7 +94,7 @@ let main = async () => {
         "password": input.password
     }, {
         headers: {
-            appName: "xplm"
+            appName: "easyplm"
         }
     });
     if (response.status == 200) {

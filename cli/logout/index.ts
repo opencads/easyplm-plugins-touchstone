@@ -25,7 +25,7 @@ for (let i = 0; i < args.length; i++) {
 }
 console.log(parameters);
 
-let cacheDirectory = Path.Combine(env('userprofile'), ".xplm", "cache");
+let cacheDirectory = Path.Combine(env('userprofile'), ".easyplm", "cache");
 if (Directory.Exists(cacheDirectory) == false) {
     Directory.CreateDirectory(cacheDirectory);
 }
@@ -48,9 +48,9 @@ let main = async () => {
     let input = Json.Load(inputPath);
     let output = {} as IUserInfomation;
     setLoggerPath(loggerPath);
-    File.WriteAllText(cacheLoginJsonPath,JSON.stringify({
-        isLogin:false
-    }),utf8);
+    File.WriteAllText(cacheLoginJsonPath, JSON.stringify({
+        isLogin: false
+    }), utf8);
     File.WriteAllText(outputPath, JSON.stringify(output), utf8);
 };
 

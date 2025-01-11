@@ -4,7 +4,7 @@
         "contentMD5": ""
     },
     "Method": "POST",
-    "Url": "$urlPrefix+`/api/v1/xplm/getContentArchivePath`",
+    "Url": "$urlPrefix+`/api/v1/easyplm/getContentArchivePath`",
     "Body": {
         "contentMD5": "$contentMD5"
     }

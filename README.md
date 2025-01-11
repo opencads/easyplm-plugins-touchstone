@@ -1,1 +1,1 @@
-# xplm-plugins-touchstone
+# easyplm-plugins-touchstone
