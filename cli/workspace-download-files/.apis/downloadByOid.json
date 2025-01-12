@@ -14,6 +14,7 @@
         "appName": "easyplm",
         "tenantOid": "$tenantOid"
     },
+    "ResponseType": "Binary",
     "QueryParameters": {
         "fileOid": "$fileOid"
     }
