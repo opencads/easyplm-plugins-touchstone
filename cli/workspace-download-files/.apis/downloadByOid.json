@@ -1,0 +1,20 @@
+{
+    "Parameters": {
+        "urlPrefix": "http://116.198.204.139:5001/",
+        "loginJsonPath": "$`${env('userprofile')}/.easyplm/cache/login.json`",
+        "loginJson": "$Json.Load(loginJsonPath)",
+        "token": "$loginJson.token",
+        "tenantOid": "$loginJson.tenant_id",
+        "fileOid": ""
+    },
+    "Method": "GET",
+    "Url": "$urlPrefix+`pdm-standalone/file-micro/file/downloadByOid`",
+    "Headers": {
+        "accesstoken": "$token",
+        "appName": "easyplm",
+        "tenantOid": "$tenantOid"
+    },
+    "QueryParameters": {
+        "fileOid": "$fileOid"
+    }
+}

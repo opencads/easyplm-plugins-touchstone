@@ -154,7 +154,28 @@ export interface SpaceMcad {
     spaceLifecycleStatus: string;
     boundingBox: string;
     pdmLatest: boolean;
-    primaryFiles: any[]; // 假设为任意类型数组，可以根据需要具体化
+    primaryFiles: {
+        oid: string;
+        type: string;
+        modelDefinition: null;
+        modelIcon: null;
+        markForDelete: boolean;
+        owner: string;
+        createBy: string;
+        createDate: number;
+        updateBy: string;
+        updateDate: number;
+        tenantOid: string;
+        orderBy: number;
+        userOid: string;
+        fileOid: string;
+        fileName: string;
+        filePath: null;
+        fileType: string;
+        fileLastModified: string;
+        pdmFileLastModified: string;
+        primary: boolean;
+    }[]; // 假设为任意类型数组，可以根据需要具体化
     secondaryFiles: any[];
     needCheckin: boolean;
     checkinMessage: null | undefined;
@@ -247,4 +268,4 @@ export interface batchBindSecondaryFile {
     primary: boolean;
     nodeType: string;
     pdmVersion: string;
-  }
+}

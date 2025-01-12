@@ -1,14 +1,15 @@
-import { args, env, setLoggerPath } from '../.tsc/context';
+import { apis, args, setLoggerPath } from '../.tsc/context';
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
 import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
 import { File } from '../.tsc/System/IO/File';
 import { Path } from '../.tsc/System/IO/Path';
 import { Directory } from '../.tsc/System/IO/Directory';
-import { apis } from "../.tsc/Cangjie/TypeSharp/System/apis";
 import { DateTime } from '../.tsc/System/DateTime';
 import { ILoginInfomation, ITouchstoneWebMessage } from '../interfaces';
 import { IWorkspaceRecord, MCADCatalog } from './interfaces';
+import { env } from '../.tsc/staticContext';
+
 let utf8 = new UTF8Encoding(false);
 let parameters = {} as { [key: string]: string };
 for (let i = 0; i < args.length; i++) {

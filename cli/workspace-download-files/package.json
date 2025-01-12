@@ -1,0 +1,5 @@
+{
+    "Name": "workspace-download-files",
+    "Entry": "{.}/index.ts",
+    "Type": "TypeSharp-Progress"
+}
