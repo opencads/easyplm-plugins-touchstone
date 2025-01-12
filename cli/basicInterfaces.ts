@@ -1,15 +1,17 @@
 import { Guid } from "./.tsc/System/Guid";
 
 export interface IDocumentRecord {
-    key:string,
+    key: string,
     name: string;
     fileName: string;
     number: string;
     partNumber: string;
     remote: {
+        success: boolean;
         remoteState: 'new' | 'checkedIn' | 'checkedOut' | 'unknown';
         remoteLastModifiedTime: string;
         lifeCycle: string;
+        version: string;
         remoteAttributes: {
             key: string,
             value: string,
@@ -24,6 +26,7 @@ export interface IDocumentRecord {
         raw?: any
     },
     local: {
+        success: boolean;
         workspaceState: 'untracked' | 'modified' | 'archived' | 'missing' | 'todownload';
         localFilePath: string;
         localAttributes: {

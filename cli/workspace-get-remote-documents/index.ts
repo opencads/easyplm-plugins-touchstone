@@ -1,4 +1,4 @@
-import { args, env, setLoggerPath } from '../.tsc/context';
+import { apis, args, setLoggerPath } from '../.tsc/context';
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
 import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
@@ -6,13 +6,13 @@ import { ILoginInfomation, ITouchstoneLoginResult, ITouchstoneWebMessage, IUserI
 import { File } from '../.tsc/System/IO/File';
 import { Path } from '../.tsc/System/IO/Path';
 import { Directory } from '../.tsc/System/IO/Directory';
-import { apis } from "../.tsc/Cangjie/TypeSharp/System/apis";
 import { IDocumentRecord } from '../basicInterfaces';
 import { ActiveWorkspaceResult } from './activeWorkspaceInterfaces';
 import { TenantInfoResult } from './tenantInfoInterfaces';
 import { GetListResult } from './getlistInterfaces';
 import { DateTime } from '../.tsc/System/DateTime';
 import { getRemoteDocumentsOutput } from './interfaces';
+import { env } from '../.tsc/staticContext';
 let utf8 = new UTF8Encoding(false);
 let parameters = {} as { [key: string]: string };
 for (let i = 0; i < args.length; i++) {
@@ -114,10 +114,33 @@ let main = async () => {
         }
         document.number = '';
         document.partNumber = row.pnumber;
+        let children = [] as {
+            fileName: string;
+            name: string;
+            number: string;
+            partNumber: string;
+        }[];
+        let attributes = [] as {
+            key: string;
+            value: string;
+            type: string;
+        }[];
+        if (row.params) {
+            let paramsKeys = Object.keys(row.params);
+            for (let key of paramsKeys) {
+                attributes.push({
+                    key: key,
+                    value: row.params[key],
+                    type: 'string'
+                });
+            }
+        }
         document.remote = {
+            success: true,
             lifeCycle: row.lifecycleStatus,
-            remoteAttributes: [],
-            remoteChildren: [],
+            version: row.displayVersion,
+            remoteAttributes: attributes,
+            remoteChildren: children,
             remoteLastModifiedTime: DateTime.Parse(row.fileLastModified).ToString("O"),
             remoteState: 'unknown',
             raw: row
@@ -137,6 +160,7 @@ let main = async () => {
             document.remote.remoteState = 'checkedOut';
         }
         document.local = {
+            success: false,
             localAttributes: [],
             localChildren: [],
             localFilePath: "",
