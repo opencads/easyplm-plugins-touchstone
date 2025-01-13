@@ -1,0 +1,12 @@
+{
+    "disable": [
+        "number"
+    ],
+    "columns": [
+        {
+            "key": "fileLastModified",
+            "title": "File Modified Time",
+            "dataIndex": "fileLastModified"
+        }
+    ]
+}
