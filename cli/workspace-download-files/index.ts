@@ -6,7 +6,7 @@ import { File } from '../.tsc/System/IO/File';
 import { Path } from '../.tsc/System/IO/Path';
 import { Directory } from '../.tsc/System/IO/Directory';
 import { DateTime } from '../.tsc/System/DateTime';
-import { ILoginInfomation, IProgresser, ITouchstoneWebMessage } from '../interfaces';
+import { ILoginInfomation, IProgresser, ITouchstoneWebMessage, WebMessage } from '../interfaces';
 import { env } from '../.tsc/staticContext';
 import { IDocumentRecord } from '../basicInterfaces';
 import { fileUtils } from '../.tsc/Cangjie/TypeSharp/System/fileUtils';
@@ -38,17 +38,7 @@ if (Directory.Exists(cacheDirectory) == false) {
 }
 let cacheLoginJsonPath = Path.Combine(cacheDirectory, "login.json");
 
-let downloadByOid = async (fileOid: string) => {
-    let response = await apis.runAsync("downloadByOid", {
-        fileOid
-    });
-    if (response.StatusCode == 200) {
-        console.log(response);
-    }
-    else {
-        throw `Failed, status code: ${response.StatusCode}`;
-    }
-};
+
 
 let Progresser = (progressPath: string, start: number, length: number) => {
     return {} as IProgresser;
@@ -95,6 +85,36 @@ Progresser = (progressPath: string, start: number, length: number) => {
     };
 };
 
+let getDefaultDirectory = async () => {
+    let response = await apis.runAsync("getDefaultDirectory", {
+
+    });
+    if (response.StatusCode == 200) {
+        let msg = response.Body as WebMessage;
+        if (msg.success) {
+            return msg.data;
+        }
+        else {
+            throw msg.message;
+        }
+    }
+    else {
+        throw `Failed, status code: ${response.StatusCode}`;
+    }
+};
+
+let downloadByOid = async (fileOid: string) => {
+    let response = await apis.runAsync("downloadByOid", {
+        fileOid
+    });
+    if (response.StatusCode == 200) {
+        return response.Body as string;
+    }
+    else {
+        throw `Failed, status code: ${response.StatusCode}`;
+    }
+};
+
 let main = async () => {
     let inputPath = parameters.i ?? parameters.input;
     let outputPath = parameters.o ?? parameters.output;
@@ -123,6 +143,7 @@ let main = async () => {
         return;
     }
     let documentProgressStep = 1.0 / input.length;
+    let defaultDirectory = await getDefaultDirectory();
     for (let document of input) {
         let progressID_document = Guid.NewGuid().ToString();
         progresser.recordByIncrease({
@@ -135,7 +156,9 @@ let main = async () => {
             let raw = document.remote.raw as SpaceMcad;
             if (raw.primaryFiles && (raw.primaryFiles.length > 0)) {
                 let primaryFile = raw.primaryFiles[0];
-                await downloadByOid(primaryFile.fileOid);
+                let localFilePath = await downloadByOid(primaryFile.fileOid);
+                let destinationPath = Path.Combine(defaultDirectory, primaryFile.fileName);
+                File.Copy(localFilePath, destinationPath, true);
             }
             else {
                 progresser.recordByIncrease({
