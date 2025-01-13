@@ -6,7 +6,8 @@
         {
             "key": "fileLastModified",
             "title": "File Modified Time",
-            "dataIndex": "fileLastModified"
+            "dataIndex": "fileLastModified",
+            "width":"12em"
         }
     ]
 }
